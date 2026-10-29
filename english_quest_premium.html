@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quest - Premium Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Noto Serif JP for Premium Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Noto Serif JP"', 'serif'],
+                    },
+                    colors: {
+                        premium: {
+                            dark: '#1a1c23',
+                            card: '#2d3748',
+                            gold: '#d4af37',
+                            light: '#f7fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #1a1c23; color: #f7fafc; background-image: radial-gradient(circle at top right, #2d3748, #1a1c23); }
+        .glass-panel {
+            background: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .gold-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8222 100%);
+            color: #1a1c23;
+            transition: all 0.3s ease;
+        }
+        .gold-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="font-serif min-h-screen p-4 md:p-8 flex items-center justify-center">
+    <!-- Main Container: 画面サイズに応じてカラムが変化 (md:flex-row でiPad以上は横並び) -->
+    <div id="app" class="w-full max-w-6xl md:h-[80vh] flex flex-col md:flex-row gap-6">
+        
+        <!-- Sidebar / Status -->
+        <aside class="glass-panel p-6 rounded-2xl md:w-1/3 flex flex-col justify-between">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-premium-gold mb-4 border-b border-premium-gold/30 pb-4">
+                    <i class="fas fa-compass"></i> English Quest
+                </h1>
+                <div class="mt-4 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">現在地</span>
+                        <span class="text-lg md:text-xl tracking-wide">茨城県 鹿嶋市</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">所持コイン</span>
+                        <span class="text-lg md:text-xl text-premium-gold font-bold"><i class="fas fa-coins"></i> 1,250</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-600/50">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center text-3xl border border-premium-gold shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+                        🐈
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400">AIコンシェルジュ</div>
+                        <div class="font-bold text-lg">トラベラー・ニャンコ</div>
+                    </div>
+                </div>
+                <div id="ai-message" class="mt-4 p-4 rounded-xl bg-gray-900/80 text-sm md:text-base text-gray-300 italic border-l-2 border-premium-gold">
+                    「優雅な旅をサポートするニャ。準備はいいかニャ？」
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Play Area -->
+        <main class="glass-panel p-6 md:p-10 rounded-2xl md:w-2/3 flex flex-col relative overflow-hidden" id="main-area">
+            
+            <!-- Map Screen -->
+            <div id="screen-map" class="fade-in h-full flex flex-col items-center justify-center">
+                <i class="fas fa-map-marked-alt text-6xl md:text-8xl text-premium-gold mb-8 drop-shadow-lg"></i>
+                <h2 class="text-2xl md:text-4xl font-bold mb-8 tracking-wide">次の目的地へ出発しますか？</h2>
+                <div class="bg-gray-900/80 p-6 md:p-8 rounded-xl w-full max-w-md mb-10 text-center border border-gray-600/50">
+                    <div class="text-2xl md:text-3xl mb-2 text-white">潮来市 <span class="text-lg text-gray-400 ml-2">Itako</span></div>
+                    <div class="text-sm text-gray-400 mt-4">推奨レベル: 5 / 消費スタミナ: 10</div>
+                </div>
+                <button onclick="navigate('quiz')" class="gold-btn px-12 py-4 rounded-full text-xl font-bold shadow-lg flex items-center gap-3">
+                    旅に出る <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="screen-quiz" class="fade-in h-full hidden flex-col">
+                <div class="flex justify-between items-center mb-10">
+                    <button onclick="navigate('map')" class="text-gray-400 hover:text-white transition flex items-center gap-2">
+                        <i class="fas fa-times"></i> 中断
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-400">潮来市まで:</span>
+                        <div class="flex gap-2">
+                            <div class="w-10 h-1.5 rounded-full bg-premium-gold"></div>
+                            <div class="w-10 h-1.5 rounded-full bg-premium-gold"></div>
+                            <div class="w-10 h-1.5 rounded-full bg-gray-700"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow flex flex-col items-center justify-center text-center">
+                    <div class="text-gray-400 mb-4 text-sm tracking-widest">【 🔊 音声リピート 】</div>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-12 tracking-widest text-white shadow-sm">図 書 館</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+                        <button onclick="playCorrect()" class="p-6 rounded-xl bg-gray-800/80 border border-gray-600 hover:border-premium-gold hover:bg-gray-800 transition text-lg md:text-xl text-left pl-8 shadow-md">1. library</button>
+                        <button onclick="playWrong()" class="p-6 rounded-xl bg-gray-800/80 border border-gray-600 hover:border-premium-gold hover:bg-gray-800 transition text-lg md:text-xl text-left pl-8 shadow-md">2. museum</button>
+                        <button onclick="playWrong()" class="p-6 rounded-xl bg-gray-800/80 border border-gray-600 hover:border-premium-gold hover:bg-gray-800 transition text-lg md:text-xl text-left pl-8 shadow-md">3. hospital</button>
+                        <button onclick="playWrong()" class="p-6 rounded-xl bg-gray-800/80 border border-gray-600 hover:border-premium-gold hover:bg-gray-800 transition text-lg md:text-xl text-left pl-8 shadow-md">4. school</button>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button class="px-6 py-3 rounded-lg border border-premium-gold text-premium-gold text-sm hover:bg-premium-gold hover:text-premium-dark transition flex items-center gap-2">
+                        <i class="fas fa-paw"></i> スキル発動 (残り1回)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Boss Screen -->
+            <div id="screen-boss" class="fade-in h-full hidden flex-col">
+                <div class="flex justify-between items-center mb-8">
+                    <button onclick="navigate('map')" class="text-gray-400 hover:text-white transition flex items-center gap-2">
+                        <i class="fas fa-flag"></i> 逃げる
+                    </button>
+                    <div class="text-red-400 text-lg flex items-center gap-2">
+                        ボス残機: <i class="fas fa-skull"></i> <i class="fas fa-skull"></i>
+                    </div>
+                </div>
+
+                <div class="flex-grow flex flex-col items-center justify-center">
+                    <div class="text-2xl md:text-3xl mb-6 text-purple-400 font-bold flex items-center gap-3">
+                        <i class="fas fa-ghost"></i> あやめのお化け
+                    </div>
+                    <div class="bg-gray-900/80 p-6 md:p-8 rounded-xl mb-10 text-center w-full max-w-lg border border-purple-500/30">
+                        <div class="text-sm text-gray-400 mb-2">日本語</div>
+                        <div class="text-3xl font-bold mb-6">図書館</div>
+                        <div class="text-sm text-gray-400 mb-2">ヒント</div>
+                        <div class="text-2xl tracking-[0.3em] text-premium-gold font-mono">l _ _ _ _ _ y</div>
+                    </div>
+
+                    <div class="w-full max-w-lg">
+                        <input type="text" placeholder="スペルを入力..." class="w-full bg-gray-900 border border-gray-600 rounded-xl p-5 md:p-6 text-center text-xl md:text-2xl uppercase tracking-widest focus:outline-none focus:border-premium-gold focus:ring-1 focus:ring-premium-gold transition mb-6 shadow-inner text-white">
+                        <button onclick="navigate('result')" class="w-full gold-btn py-5 rounded-xl text-xl md:text-2xl font-bold shadow-lg flex items-center justify-center gap-3">
+                            <i class="fas fa-khanda"></i> 攻撃！
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="screen-result" class="fade-in h-full hidden flex-col items-center justify-center text-center">
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-premium-gold flex items-center justify-center mb-8 text-6xl md:text-7xl text-premium-gold shadow-[0_0_40px_rgba(212,175,55,0.4)]">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-3 tracking-wide">潮来市 制覇</h2>
+                <p class="text-gray-400 mb-12 text-lg md:text-xl tracking-widest">ITAKO CITY CLEARED</p>
+                
+                <div class="flex gap-12 mb-12">
+                    <div class="text-center">
+                        <div class="text-sm text-gray-400 mb-2">獲得経験値</div>
+                        <div class="text-3xl font-bold">+ 150 <span class="text-sm font-normal">EXP</span></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-400 mb-2">獲得コイン</div>
+                        <div class="text-3xl font-bold text-premium-gold">+ 500 <span class="text-sm font-normal text-gray-400">COIN</span></div>
+                    </div>
+                </div>
+
+                <button onclick="navigate('map')" class="px-10 py-4 rounded-full border border-premium-gold text-premium-gold hover:bg-premium-gold hover:text-premium-dark transition text-lg md:text-xl tracking-wide flex items-center gap-2">
+                    マップへ戻る <i class="fas fa-redo-alt text-sm"></i>
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const screens = ['map', 'quiz', 'boss', 'result'];
+        const aiMessages = {
+            'map': '「優雅な旅をサポートするニャ。準備はいいかニャ？」',
+            'quiz': '「この単語は頻出だニャ。焦らず落ち着いて選ぶニャ！」',
+            'boss': '「ボスの登場ニャ！学んだスペルを正確に打ち込むニャ！」',
+            'result': '「素晴らしい活躍だったニャ！次もこの調子で進むニャ。」'
+        };
+
+        function navigate(targetScreen) {
+            screens.forEach(s => {
+                document.getElementById('screen-' + s).classList.add('hidden');
+                document.getElementById('screen-' + s).classList.remove('flex');
+            });
+            const target = document.getElementById('screen-' + targetScreen);
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+            document.getElementById('ai-message').innerText = aiMessages[targetScreen];
+        }
+
+        function playCorrect() {
+            navigate('boss');
+        }
+
+        function playWrong() {
+            const msg = document.getElementById('ai-message');
+            msg.innerText = '「惜しいニャ！libraryが正解だニャ。」';
+            msg.classList.add('text-red-400');
+            setTimeout(() => {
+                msg.classList.remove('text-red-400');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
